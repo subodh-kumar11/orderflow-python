@@ -11,7 +11,7 @@ from app.models import Base
 
 @pytest.fixture
 def app(tmp_path):
-    url = os.getenv("TEST_DATABASE_URL", f"sqlite:///{tmp_path / 'test.db'}")
+    url = os.getenv("TEST_DATABASE_URL") or f"sqlite:///{tmp_path / 'test.db'}"
     application = create_app(Settings(database_url=url, scheduler_enabled=False))
     # TEST_DATABASE_URL must point to a disposable database, never a production database.
     if os.getenv("TEST_DATABASE_URL"):
