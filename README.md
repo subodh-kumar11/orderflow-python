@@ -161,5 +161,6 @@ CI runs backend checks on Python 3.11/3.12/3.13 against SQLite and PostgreSQL 16
 - [AI assistance, observed issues and corrections](AI_USAGE.md)
 - [Verification evidence](VERIFICATION.md)
 - [Walkthrough guide](docs/WALKTHROUGH.md)
+- [GitHub and future development](GITHUB.md)
 
 This is a local take-home demonstration, not an authenticated commerce platform. It intentionally omits login/ownership authorization, catalog-controlled prices, inventory reservation, payments, shipping integration, audit history and schema migrations. Those are sensible next steps before a public deployment. The customer ID and item prices are supplied by the demo client.

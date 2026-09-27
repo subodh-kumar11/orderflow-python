@@ -6,6 +6,8 @@ This project was developed with ChatGPT/Codex assistance, as encouraged by the a
 
 | Issue observed during development | Correction and verification |
 | --- | --- |
+| The nginx container started but its localhost health probe stayed unhealthy in CI | Changed the probe to explicit IPv4 loopback, matching the configured nginx listener; Compose is verified independently in CI |
+| CI supplied an empty TEST_DATABASE_URL, bypassing the test fixture's default SQLite URL | Changed the fixture to treat both unset and empty values as SQLite; reran all 114 tests with an explicitly empty environment value |
 | SQLAlchemy model forward references failed during initial import | Enabled postponed annotations; backend then imported and its test suite ran |
 | A status-matrix test initially depended on the implementation's transition constant | Replaced its oracle with an independent literal set of allowed transitions, so a regression in the service cannot silently change test expectations |
 | The status-filter browser test did not allow the space before the displayed count | Updated the accessible-name matcher; the filtering assertion and all six browser cases passed |
