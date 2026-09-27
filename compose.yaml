@@ -1,0 +1,50 @@
+name: orderflow-python
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: orderflow
+      POSTGRES_USER: orderflow
+      POSTGRES_PASSWORD: orderflow_dev
+    volumes:
+      - orderflow-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orderflow -d orderflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      ORDERFLOW_DATABASE_URL: postgresql+psycopg://orderflow:orderflow_dev@db:5432/orderflow
+      ORDERFLOW_PROCESSING_INTERVAL_SECONDS: 300
+      ORDERFLOW_AI_PROVIDER: ${ORDERFLOW_AI_PROVIDER:-disabled}
+      ORDERFLOW_AI_API_KEY: ${ORDERFLOW_AI_API_KEY:-}
+      ORDERFLOW_AI_BASE_URL: ${ORDERFLOW_AI_BASE_URL:-https://api.openai.com/v1}
+      ORDERFLOW_AI_MODEL: ${ORDERFLOW_AI_MODEL:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  orderflow-db:
